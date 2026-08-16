@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
 const generateToken = require('../utils/generateToken');
+const { uploadToCloudinary } = require('../utils/cloudinary');
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -179,7 +180,13 @@ const updateProfile = async (req, res, next) => {
     if (req.body.phone) user.phone = req.body.phone;
 
     if (req.body.profilePhoto !== undefined) {
-      user.profilePhoto = req.body.profilePhoto;
+      const rawPhoto = req.body.profilePhoto;
+      if (rawPhoto && typeof rawPhoto === 'string' && rawPhoto.startsWith('data:image/')) {
+        const cloudinaryUrl = await uploadToCloudinary(rawPhoto, 'torque/profile-images');
+        user.profilePhoto = cloudinaryUrl;
+      } else {
+        user.profilePhoto = rawPhoto;
+      }
     }
 
     if (req.body.password && req.body.password.trim().length >= 6) {
