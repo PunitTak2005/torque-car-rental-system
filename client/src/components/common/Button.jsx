@@ -8,6 +8,8 @@ const Button = ({
   variant = 'primary', // 'primary', 'secondary', 'danger', 'outline', 'ghost', 'text'
   size = 'md', // 'sm', 'md', 'lg'
   className = '',
+  showArrow = null,
+  noArrow = false,
   onClick,
   ...props
 }) => {
@@ -49,6 +51,11 @@ const Button = ({
   const isCustomLoading = typeof children === 'string' && loading;
   const processedLoadingText = isCustomLoading ? 'PROCESSING ···' : children;
 
+  // Render trailing right arrow ONLY for primary forward CTA buttons (or when showArrow === true)
+  const shouldRenderArrow = !loading && !noArrow && (
+    showArrow === true || (showArrow !== false && variant === 'primary')
+  );
+
   return (
     <button
       type={type}
@@ -63,7 +70,7 @@ const Button = ({
         {processedLoadingText}
       </span>
 
-      {!loading && variant !== 'text' && variant !== 'ghost' && (
+      {shouldRenderArrow && (
         <span className="text-[10px] font-sans font-black tracking-normal transition-transform duration-200 group-hover:translate-x-1 shrink-0">
           →
         </span>

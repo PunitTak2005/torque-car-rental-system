@@ -309,6 +309,26 @@ const BookingWorkflow = () => {
     <div className="bg-asphalt min-h-screen pb-24 pt-20 text-chalk">
       <div className="max-w-7xl mx-auto px-6 sm:px-10 py-10 space-y-10">
         
+        {/* Top Back Navigation Control */}
+        <div>
+          <button
+            type="button"
+            onClick={() => {
+              if (step > 1) {
+                prevStep();
+              } else if (carId) {
+                navigate(`/cars/${carId}`);
+              } else {
+                navigate('/cars');
+              }
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-graphite/60 border border-white/10 rounded-xl text-xs font-bold text-silver hover:text-chalk hover:border-neon-accent transition-all uppercase tracking-wider shadow-sm group cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4 text-neon-accent transition-transform group-hover:-translate-x-1" />
+            <span>{step > 1 ? `Back to Step 0${step - 1}` : 'Back to Machine Details'}</span>
+          </button>
+        </div>
+
         {/* Header Hero */}
         <div className="space-y-3 border-b border-white/10 pb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
