@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 48 48">
+  <!-- Mechanical, high-performance rotational T design -->
+  <path d="M8 8h32v8H28v24h-8V16H8V8z" fill="#E5C158" />
+  <circle cx="24" cy="28" r="4" stroke="#0A0A0B" stroke-width="2" fill="#E5C158" />
+</svg>
