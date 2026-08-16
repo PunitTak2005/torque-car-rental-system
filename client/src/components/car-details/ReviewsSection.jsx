@@ -1,25 +1,39 @@
 import React, { useState } from 'react';
-import { MessageSquare, Star, Send, ShieldCheck, UserCheck, AlertCircle } from 'lucide-react';
+import {
+  MessageSquare,
+  Star,
+  Send,
+  ShieldCheck,
+  AlertCircle,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { createReview } from '../../services/api';
 import Button from '../common/Button';
+
+const INITIAL_VISIBLE_COUNT = 3;
+const BATCH_SIZE = 3;
 
 const ReviewsSection = ({ carId, reviews: initialReviews = [], onReviewAdded }) => {
   const { user } = useAuth();
   const { addToast } = useToast();
 
   const [reviewsList, setReviewsList] = useState(initialReviews);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
+
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
 
-  // Sync state if prop changes
+  // Sync state if initialReviews or carId changes
   React.useEffect(() => {
     setReviewsList(initialReviews);
-  }, [initialReviews]);
+    setVisibleCount(INITIAL_VISIBLE_COUNT);
+  }, [initialReviews, carId]);
 
   // Calculate dynamic rating breakdown stats
   const totalCount = reviewsList.length;
@@ -33,6 +47,19 @@ const ReviewsSection = ({ carId, reviews: initialReviews = [], onReviewAdded }) 
   });
 
   const avgRating = totalCount > 0 ? (sumRating / totalCount).toFixed(1) : '5.0';
+
+  // Progressive rendering slices
+  const visibleReviews = reviewsList.slice(0, visibleCount);
+  const hasMore = visibleCount < totalCount;
+  const canShowLess = visibleCount > INITIAL_VISIBLE_COUNT && totalCount > INITIAL_VISIBLE_COUNT;
+
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => Math.min(prev + BATCH_SIZE, totalCount));
+  };
+
+  const handleShowLess = () => {
+    setVisibleCount(INITIAL_VISIBLE_COUNT);
+  };
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
@@ -66,6 +93,8 @@ const ReviewsSection = ({ carId, reviews: initialReviews = [], onReviewAdded }) 
         setShowReviewForm(false);
         const updated = [data.review, ...reviewsList];
         setReviewsList(updated);
+        // Expand visible count to make newly added review immediately visible
+        setVisibleCount((prev) => prev + 1);
         if (onReviewAdded) onReviewAdded(data.review, updated);
       }
     } catch (error) {
@@ -89,7 +118,7 @@ const ReviewsSection = ({ carId, reviews: initialReviews = [], onReviewAdded }) 
           </div>
           <p className="text-[10px] text-silver/70 uppercase tracking-widest mt-1 font-sans flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Verified Client Feedback & Authentic Driver Ratings</span>
+            <span>Verified Client Feedback & Authentic Driver Ratings ({totalCount})</span>
           </p>
         </div>
 
@@ -104,12 +133,12 @@ const ReviewsSection = ({ carId, reviews: initialReviews = [], onReviewAdded }) 
         )}
       </div>
 
-      {/* Write a Review Modal / Form */}
+      {/* Write a Review Form */}
       {showReviewForm && (
-        <form onSubmit={handleSubmitReview} className="bg-asphalt/80 border border-white/15 p-6 rounded-2xl space-y-4 animate-page-enter">
+        <form onSubmit={handleSubmitReview} className="bg-asphalt/80 border border-white/15 p-6 rounded-2xl space-y-4 animate-fade-in">
           <h4 className="text-xs font-bold uppercase tracking-widest text-chalk">SUBMIT YOUR RATING & FEEDBACK</h4>
 
-          {/* Interactive Star Picker */}
+          {/* Star Picker */}
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-silver uppercase tracking-widest">RATING SCORE</label>
             <div className="flex items-center gap-1.5">
@@ -135,7 +164,7 @@ const ReviewsSection = ({ carId, reviews: initialReviews = [], onReviewAdded }) 
             </div>
           </div>
 
-          {/* Review Text Area */}
+          {/* Comment */}
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-silver uppercase tracking-widest">YOUR EXPERIENCE / COMMENT</label>
             <textarea
@@ -160,7 +189,7 @@ const ReviewsSection = ({ carId, reviews: initialReviews = [], onReviewAdded }) 
         </form>
       )}
 
-      {/* Ratings Breakdown & Summary Matrix */}
+      {/* Ratings Breakdown Summary Matrix */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-asphalt/50 border border-white/10 p-6 rounded-2xl">
         
         {/* Left score card */}
@@ -216,8 +245,14 @@ const ReviewsSection = ({ carId, reviews: initialReviews = [], onReviewAdded }) 
             <p className="text-[10px] text-silver/60">Be the first client to submit a review after your rental drive!</p>
           </div>
         ) : (
-          reviewsList.map((rev) => {
-            const authorName = rev.reviewerName || rev.name || rev.userName || rev.author || (rev.user && rev.user.name && !['John Doe', 'Administrator', 'admin', 'User'].includes(rev.user.name) ? rev.user.name : null) || 'Verified Client';
+          visibleReviews.map((rev) => {
+            const authorName =
+              rev.reviewerName ||
+              rev.name ||
+              rev.userName ||
+              rev.author ||
+              (rev.user && rev.user.name && !['John Doe', 'Administrator', 'admin', 'User'].includes(rev.user.name) ? rev.user.name : null) ||
+              'Verified Client';
 
             const getInitials = (str) => {
               if (!str) return 'VC';
@@ -233,7 +268,7 @@ const ReviewsSection = ({ carId, reviews: initialReviews = [], onReviewAdded }) 
             return (
               <div
                 key={rev._id || Math.random()}
-                className="p-5 sm:p-6 bg-asphalt/60 border border-white/10 rounded-2xl space-y-3 transition-all hover:border-white/20"
+                className="p-5 sm:p-6 bg-asphalt/60 border border-white/10 rounded-2xl space-y-3 transition-all hover:border-white/20 animate-fade-in"
               >
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-3">
@@ -270,6 +305,31 @@ const ReviewsSection = ({ carId, reviews: initialReviews = [], onReviewAdded }) 
           })
         )}
       </div>
+
+      {/* Load More & Show Less Action Controls */}
+      {(hasMore || canShowLess) && (
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-4 border-t border-white/10">
+          {hasMore && (
+            <button
+              onClick={handleLoadMore}
+              className="px-6 py-2.5 text-xs font-extrabold uppercase tracking-widest bg-asphalt hover:bg-neon-accent hover:text-asphalt text-chalk border border-white/15 hover:border-neon-accent/40 rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer"
+            >
+              <ChevronDown className="w-4 h-4 text-neon-accent" />
+              <span>LOAD MORE REVIEWS ({totalCount - visibleCount} REMAINING)</span>
+            </button>
+          )}
+
+          {canShowLess && (
+            <button
+              onClick={handleShowLess}
+              className="px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-silver hover:text-chalk border border-white/10 hover:border-white/20 rounded-xl transition-all flex items-center gap-2 cursor-pointer bg-graphite/60"
+            >
+              <ChevronUp className="w-4 h-4 text-silver" />
+              <span>SHOW LESS</span>
+            </button>
+          )}
+        </div>
+      )}
 
     </div>
   );
