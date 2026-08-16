@@ -38,7 +38,10 @@ const CalendarCard = ({
   useEffect(() => {
     let isMounted = true;
 
-    if (!selectedCity && !selectedCarId) {
+    const cleanCity = (selectedCity && selectedCity !== 'undefined' && selectedCity !== 'null') ? String(selectedCity).trim() : '';
+    const cleanCarId = (selectedCarId && selectedCarId !== 'undefined' && selectedCarId !== 'null') ? String(selectedCarId).trim() : '';
+
+    if (!cleanCity && !cleanCarId) {
       setAvailabilityMap({});
       setTotalCars(0);
       setErrorMessage('Select a pickup hub to view availability.');
@@ -49,12 +52,13 @@ const CalendarCard = ({
       setLoading(true);
       setErrorMessage('');
       try {
-        const { data } = await getCarAvailability({
-          city: selectedCity,
-          carId: selectedCarId,
-          year,
-          month
-        });
+        const params = { year, month };
+        if (cleanCity) params.city = cleanCity;
+        if (cleanCarId) params.carId = cleanCarId;
+
+        console.log('[CalendarCard Request]:', params);
+
+        const { data } = await getCarAvailability(params);
 
         if (isMounted) {
           if (data.success) {
@@ -68,9 +72,10 @@ const CalendarCard = ({
           }
         }
       } catch (err) {
-        console.error('[CalendarCard API Error]:', err);
+        console.error('[CalendarCard API Error]:', err?.response?.data || err.message);
         if (isMounted) {
-          setErrorMessage('Unable to load availability. Please try again.');
+          const apiMsg = err.response?.data?.message || 'Unable to load availability. Please try again.';
+          setErrorMessage(apiMsg);
         }
       } finally {
         if (isMounted) setLoading(false);

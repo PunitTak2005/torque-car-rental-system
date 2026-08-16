@@ -228,17 +228,41 @@ const getCarDetails = async (req, res, next) => {
 // @access  Public
 const getCarAvailability = async (req, res, next) => {
   try {
-    const { city, carId, year, month } = req.query;
+    let { city, carId, year, month } = req.query;
 
-    const currentYear = year ? parseInt(year, 10) : new Date().getFullYear();
-    const currentMonth = month ? parseInt(month, 10) : new Date().getMonth() + 1; // 1-12
+    // Clean stringified 'undefined' / 'null'
+    if (city === 'undefined' || city === 'null' || !city) city = undefined;
+    if (carId === 'undefined' || carId === 'null' || !carId) carId = undefined;
+
+    let currentYear = parseInt(year, 10);
+    if (isNaN(currentYear) || currentYear < 2000 || currentYear > 2100) {
+      currentYear = new Date().getFullYear();
+    }
+
+    let currentMonth = parseInt(month, 10);
+    if (isNaN(currentMonth) || currentMonth < 1 || currentMonth > 12) {
+      currentMonth = new Date().getMonth() + 1;
+    }
+
+    console.log(`[Availability API Request] City: "${city || 'N/A'}", CarId: "${carId || 'N/A'}", Year: ${currentYear}, Month: ${currentMonth}`);
 
     // Build query for vehicles
     const query = { availability: true };
-    if (carId && mongoose.Types.ObjectId.isValid(carId)) {
+    if (carId) {
+      if (!mongoose.Types.ObjectId.isValid(carId)) {
+        return res.json({
+          success: true,
+          city: city || 'All',
+          carId: null,
+          totalCars: 0,
+          availabilityMap: {},
+          message: 'Invalid vehicle ID'
+        });
+      }
       query._id = carId;
-    } else if (city) {
-      query.location = { $regex: new RegExp(city.trim(), 'i') };
+    } else if (city && typeof city === 'string' && city.trim().length > 0) {
+      const cleanCityName = city.trim();
+      query.location = { $regex: new RegExp(cleanCityName, 'i') };
     }
 
     const cars = await Car.find(query).select('_id location brand model availability');
