@@ -134,9 +134,13 @@ const Navbar = () => {
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-chalk transition-all cursor-pointer group shadow-sm active:scale-95"
                 >
-                  <span className="w-6 h-6 rounded-full bg-neon-accent text-asphalt font-extrabold text-[10px] flex items-center justify-center font-mono uppercase shadow-sm">
-                    {userInitial}
-                  </span>
+                  {user?.profilePhoto ? (
+                    <img src={user.profilePhoto} alt={displayName} className="w-6 h-6 rounded-full object-cover border border-neon-accent/50 shrink-0" />
+                  ) : (
+                    <span className="w-6 h-6 rounded-full bg-neon-accent text-asphalt font-extrabold text-[10px] flex items-center justify-center font-mono uppercase shadow-sm">
+                      {userInitial}
+                    </span>
+                  )}
                   <span className="text-[10px] font-extrabold uppercase tracking-widest text-chalk group-hover:text-neon-accent transition-colors max-w-[130px] truncate">
                     {displayName}
                   </span>

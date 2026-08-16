@@ -10,13 +10,17 @@ import Modal from '../components/common/Modal';
 import Rating from '../components/common/Rating';
 import EmptyState from '../components/common/EmptyState';
 import BookingDetailsModal from '../components/booking-history/BookingDetailsModal';
-import { Calendar, User, Bell, Printer, MapPin, Settings, MessageSquare } from 'lucide-react';
+import ChangeProfilePhotoModal from '../components/profile/ChangeProfilePhotoModal';
+import { Calendar, User, Bell, Printer, MapPin, Settings, MessageSquare, Camera, Trash2 } from 'lucide-react';
+
+import { useLocation } from 'react-router-dom';
 
 const UserDashboard = () => {
-  const { user, logout, notifications, markRead } = useAuth();
+  const { user, logout, notifications, markRead, updateUserInfo } = useAuth();
   const { addToast } = useToast();
+  const location = useLocation();
 
-  const [activeTab, setActiveTab] = useState('bookings');
+  const [activeTab, setActiveTab] = useState(location.pathname.includes('/profile') ? 'profile' : 'bookings');
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,6 +32,7 @@ const UserDashboard = () => {
   const [profilePhoto, setProfilePhoto] = useState(user?.profilePhoto || '');
   const [errors, setErrors] = useState({});
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
 
   // Review Modal States
   const [selectedBookingForReview, setSelectedBookingForReview] = useState(null);
@@ -109,7 +114,8 @@ const UserDashboard = () => {
       if (password) payload.password = password;
 
       const { data } = await updateProfile(payload);
-      if (data.success) {
+      if (data.success || data._id) {
+        updateUserInfo({ name, email, phone, profilePhoto });
         addToast('Profile updated successfully!', 'success');
         setPassword('');
       }
@@ -118,6 +124,24 @@ const UserDashboard = () => {
       addToast('Failed to update profile settings', 'error');
     } finally {
       setIsUpdatingProfile(false);
+    }
+  };
+
+  const handleSaveProfilePhoto = async (newPhotoUrl) => {
+    const { data } = await updateProfile({ profilePhoto: newPhotoUrl });
+    if (data.success || data._id) {
+      updateUserInfo({ profilePhoto: newPhotoUrl });
+      setProfilePhoto(newPhotoUrl);
+      addToast('Profile photo updated successfully.', 'success');
+    }
+  };
+
+  const handleRemoveProfilePhoto = async () => {
+    const { data } = await updateProfile({ profilePhoto: '' });
+    if (data.success || data._id) {
+      updateUserInfo({ profilePhoto: '' });
+      setProfilePhoto('');
+      addToast('Profile photo removed.', 'info');
     }
   };
 
@@ -179,16 +203,26 @@ const UserDashboard = () => {
         {/* Sidebar Nav */}
         <aside className="lg:col-span-3 bg-graphite border border-white/5 p-6 space-y-6">
           <div className="flex items-center gap-3">
-            {user?.profilePhoto ? (
-              <img src={user.profilePhoto} alt="" className="w-12 h-12 object-cover border border-white/10 shrink-0" />
-            ) : (
-              <div className="w-12 h-12 bg-asphalt flex items-center justify-center text-silver border border-white/10 shrink-0">
-                <User className="w-6 h-6" aria-hidden="true" />
+            <div className="relative group cursor-pointer" onClick={() => setIsPhotoModalOpen(true)}>
+              {user?.profilePhoto ? (
+                <img src={user.profilePhoto} alt={user?.name} className="w-12 h-12 rounded-full object-cover border-2 border-neon-accent/40 shrink-0 group-hover:opacity-80 transition-opacity" />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-asphalt flex items-center justify-center text-silver border border-white/10 shrink-0 group-hover:border-neon-accent transition-colors">
+                  <User className="w-6 h-6" aria-hidden="true" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-asphalt/60 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                <Camera className="w-4 h-4 text-neon-accent" />
               </div>
-            )}
+            </div>
             <div className="flex-1 min-w-0">
               <h2 className="font-bold text-chalk truncate uppercase tracking-widest text-xs">{user?.name}</h2>
-              <span className="text-silver/60 text-[9px] uppercase tracking-widest block mt-0.5">{user?.role} Account</span>
+              <button 
+                onClick={() => setIsPhotoModalOpen(true)}
+                className="text-neon-accent hover:underline text-[9px] font-bold uppercase tracking-widest block mt-0.5 cursor-pointer text-left"
+              >
+                Change Photo
+              </button>
             </div>
           </div>
 
@@ -380,6 +414,49 @@ const UserDashboard = () => {
             <section className="bg-graphite/45 border border-white/5 p-6 sm:p-8 space-y-6" aria-label="Profile Settings">
               <h3 className="text-xs font-bold uppercase tracking-widest text-chalk">Profile Settings</h3>
               
+              {/* Profile Photo Control Card */}
+              <div className="bg-asphalt/60 border border-white/10 p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-5">
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-neon-accent/50 bg-graphite shrink-0">
+                    {user?.profilePhoto ? (
+                      <img src={user.profilePhoto} alt={user?.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-asphalt text-silver">
+                        <User className="w-8 h-8" />
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-chalk uppercase tracking-wider">Profile Photo</h4>
+                    <p className="text-[10px] text-silver/70 uppercase tracking-widest mt-0.5">
+                      Upload an image file (JPG, PNG, WEBP) or enter a web image URL
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setIsPhotoModalOpen(true)}
+                    className="px-4 py-2.5 bg-neon-accent hover:bg-chalk text-asphalt font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                  >
+                    <Camera className="w-4 h-4" />
+                    <span>Change Photo</span>
+                  </button>
+
+                  {user?.profilePhoto && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveProfilePhoto()}
+                      className="px-3.5 py-2.5 bg-rose-500/10 hover:bg-rose-600 border border-rose-500/30 text-rose-400 hover:text-chalk text-xs font-extrabold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>Remove</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <form onSubmit={handleProfileSubmit} className="space-y-5" noValidate>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <Input
@@ -421,7 +498,7 @@ const UserDashboard = () => {
                   />
 
                   <Input
-                    label="Profile Photo URL"
+                    label="Profile Photo URL (Optional Direct Link)"
                     name="profilePhoto"
                     type="url"
                     value={profilePhoto}
@@ -522,6 +599,15 @@ const UserDashboard = () => {
           onCancelBooking={handleCancelBooking}
         />
       )}
+
+      {/* Change Profile Photo Modal */}
+      <ChangeProfilePhotoModal
+        isOpen={isPhotoModalOpen}
+        onClose={() => setIsPhotoModalOpen(false)}
+        currentPhoto={user?.profilePhoto}
+        onSavePhoto={handleSaveProfilePhoto}
+        onRemovePhoto={handleRemoveProfilePhoto}
+      />
 
     </div>
   );
