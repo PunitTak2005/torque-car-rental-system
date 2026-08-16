@@ -346,7 +346,7 @@ const Home = () => {
             {/* Left Column: Huge Confident Headline */}
             <div className="lg:col-span-8 space-y-6">
               <span className="text-[9px] font-bold tracking-[0.3em] text-neon-accent uppercase block">
-                02 / THE TORQUE PHILOSOPHY
+                THE TORQUE PHILOSOPHY
               </span>
               <h2 className="text-4xl sm:text-7xl tracking-tight leading-[0.9] font-display uppercase font-bold text-chalk">
                 WE DON'T JUST <br />
@@ -388,19 +388,19 @@ const Home = () => {
           {/* Principles sequence */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pt-8 uppercase tracking-widest font-bold text-[9px]">
             <div className="space-y-4 border-t border-white/5 pt-6">
-              <span className="text-neon-accent block text-xs">01 // FREEDOM</span>
+              <span className="text-neon-accent block text-xs">FREEDOM</span>
               <p className="text-[10px] text-silver/70 leading-relaxed font-bold tracking-wider">
                 Go wherever the road takes you.
               </p>
             </div>
             <div className="space-y-4 border-t border-white/5 pt-6">
-              <span className="text-chalk block text-xs">02 // PRECISION</span>
+              <span className="text-chalk block text-xs">PRECISION</span>
               <p className="text-[10px] text-silver/70 leading-relaxed font-bold tracking-wider">
                 Simple booking. Carefully selected vehicles.
               </p>
             </div>
             <div className="space-y-4 border-t border-white/5 pt-6">
-              <span className="text-chalk block text-xs">03 // MOTION</span>
+              <span className="text-chalk block text-xs">MOTION</span>
               <p className="text-[10px] text-silver/70 leading-relaxed font-bold tracking-wider">
                 Because the journey matters as much as the destination.
               </p>
@@ -420,7 +420,7 @@ const Home = () => {
               {/* Section Marker */}
               <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                 <span className="w-1.5 h-1.5 rounded-full bg-neon-accent animate-pulse" />
-                <span className="text-[10px] font-extrabold text-silver uppercase tracking-[0.25em]">03 / THE FLEET</span>
+                <span className="text-[10px] font-extrabold text-silver uppercase tracking-[0.25em]">THE FLEET</span>
                 <span className="w-4 h-[1px] bg-white/20" />
               </div>
 
@@ -630,7 +630,7 @@ const Home = () => {
       <section className="bg-graphite py-24 border-y border-white/5">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 grid grid-cols-1 lg:grid-cols-12 gap-12">
           <div className="lg:col-span-4 space-y-6 self-center">
-            <span className="text-[9px] font-bold text-silver tracking-widest uppercase block">04 / EXPERIENCE</span>
+            <span className="text-[9px] font-bold text-silver tracking-widest uppercase block">EXPERIENCE</span>
             <h2 className="text-3xl font-display uppercase tracking-widest text-chalk">WHAT'S YOUR DRIVE?</h2>
             <p className="text-[10px] text-silver tracking-widest uppercase">Match your road configuration to your exact mindset parameters.</p>
 
