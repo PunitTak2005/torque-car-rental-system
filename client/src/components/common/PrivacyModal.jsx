@@ -123,7 +123,7 @@ const PrivacyModal = ({ isOpen, onClose, onAccept }) => {
         <div className="space-y-2 pt-2 border-t border-white/10">
           <h4 className="text-sm font-bold uppercase tracking-wider text-chalk font-display">13. Privacy Contact</h4>
           <p>
-            If you have questions regarding data privacy or wish to exercise your rights, email <span className="text-neon-accent font-mono">privacy@torque-rentals.com</span>.
+            If you have questions regarding data privacy or wish to exercise your rights, email <span className="text-neon-accent font-mono">punittak2005@gmail.com</span> or call <span className="text-neon-accent font-mono">6367088841</span>.
           </p>
         </div>
 

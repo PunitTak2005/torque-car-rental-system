@@ -147,7 +147,7 @@ const TermsModal = ({ isOpen, onClose, onAccept }) => {
         <div className="space-y-2 pt-2 border-t border-white/10">
           <h4 className="text-sm font-bold uppercase tracking-wider text-chalk font-display">16. Contact Information</h4>
           <p>
-            For questions regarding these Terms & Conditions, please contact Torque Support at <span className="text-neon-accent font-mono">support@torque-rentals.com</span> or call <span className="text-neon-accent font-mono">+91 1800-TORQUE</span>.
+            For questions regarding these Terms & Conditions, please contact Torque Support at <span className="text-neon-accent font-mono">punittak2005@gmail.com</span> or call <span className="text-neon-accent font-mono">6367088841</span>.
           </p>
         </div>
 
