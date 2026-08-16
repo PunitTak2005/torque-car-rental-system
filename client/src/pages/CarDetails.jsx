@@ -28,6 +28,8 @@ import {
 import Breadcrumbs from '../components/car-details/Breadcrumbs';
 import ReviewsSection from '../components/car-details/ReviewsSection';
 import Button from '../components/common/Button';
+import PickupHubSelect from '../components/common/PickupHubSelect';
+import CalendarCard from '../components/common/CalendarCard';
 import storage from '../utils/storage';
 
 const CarDetails = () => {
@@ -413,17 +415,13 @@ const CarDetails = () => {
 
               {/* Quick Configurator Inputs */}
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-silver uppercase tracking-widest">PICKUP HUB</label>
-                  <input
-                    type="text"
-                    required
-                    value={pickupLoc}
-                    onChange={(e) => setPickupLoc(e.target.value)}
-                    className="block w-full px-4 py-3 bg-asphalt border border-white/15 text-xs text-chalk focus:outline-none focus:border-neon-accent rounded-xl font-bold uppercase tracking-wider"
-                    placeholder="ENTER PICKUP CITY"
-                  />
-                </div>
+                <PickupHubSelect
+                  value={pickupLoc}
+                  onChange={(val) => setPickupLoc(val)}
+                  label="PICKUP HUB"
+                  placeholder="Select Pickup Hub"
+                  required
+                />
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
@@ -450,6 +448,18 @@ const CarDetails = () => {
                     />
                   </div>
                 </div>
+
+                {/* Real-time Vehicle Availability Calendar */}
+                <CalendarCard
+                  selectedCity={pickupLoc}
+                  selectedCarId={car._id}
+                  pickupDate={pickupDate}
+                  returnDate={returnDate}
+                  onDateSelect={(pDate, rDate) => {
+                    setPickupDate(pDate);
+                    setReturnDate(rDate);
+                  }}
+                />
               </div>
 
               {/* Estimated Total Calculation Matrix */}

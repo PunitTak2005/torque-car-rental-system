@@ -16,6 +16,8 @@ import {
 } from '../validations/rules';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
+import PickupHubSelect from '../components/common/PickupHubSelect';
+import CalendarCard from '../components/common/CalendarCard';
 import { 
   Printer, 
   ArrowRight, 
@@ -390,31 +392,21 @@ const BookingWorkflow = () => {
 
                   {/* Location Selectors */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-silver uppercase tracking-widest">Pickup Location Hub</label>
-                      <select
-                        value={pickupLocation}
-                        onChange={(e) => setPickupLocation(e.target.value)}
-                        className="w-full px-4 py-3.5 bg-asphalt border border-white/15 rounded-xl text-xs font-bold text-chalk uppercase tracking-wider focus:outline-none focus:border-neon-accent cursor-pointer"
-                      >
-                        {['Delhi', 'Mumbai', 'Bengaluru', 'Jaipur', 'Udaipur', 'Goa', 'Ahmedabad', 'Pune'].map(loc => (
-                          <option key={loc} value={loc} className="bg-graphite text-chalk">{loc.toUpperCase()} HUB</option>
-                        ))}
-                      </select>
-                    </div>
+                    <PickupHubSelect
+                      value={pickupLocation}
+                      onChange={(val) => setPickupLocation(val)}
+                      label="PICKUP LOCATION HUB"
+                      placeholder="Select Pickup Hub"
+                      required
+                    />
 
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-silver uppercase tracking-widest">Return Location Hub</label>
-                      <select
-                        value={dropoffLocation}
-                        onChange={(e) => setDropoffLocation(e.target.value)}
-                        className="w-full px-4 py-3.5 bg-asphalt border border-white/15 rounded-xl text-xs font-bold text-chalk uppercase tracking-wider focus:outline-none focus:border-neon-accent cursor-pointer"
-                      >
-                        {['Delhi', 'Mumbai', 'Bengaluru', 'Jaipur', 'Udaipur', 'Goa', 'Ahmedabad', 'Pune'].map(loc => (
-                          <option key={loc} value={loc} className="bg-graphite text-chalk">{loc.toUpperCase()} HUB</option>
-                        ))}
-                      </select>
-                    </div>
+                    <PickupHubSelect
+                      value={dropoffLocation}
+                      onChange={(val) => setDropoffLocation(val)}
+                      label="RETURN LOCATION HUB"
+                      placeholder="Select Return Hub"
+                      required
+                    />
                   </div>
 
                   {/* Dates Selectors */}
@@ -446,6 +438,21 @@ const BookingWorkflow = () => {
                         className="w-full px-4 py-3 bg-asphalt border border-white/15 rounded-xl text-xs font-bold text-chalk uppercase tracking-wider focus:outline-none focus:border-neon-accent"
                       />
                     </div>
+                  </div>
+
+                  {/* Interactive City/Vehicle Real Availability Calendar */}
+                  <div className="pt-2">
+                    <CalendarCard
+                      selectedCity={pickupLocation}
+                      selectedCarId={selectedCarId}
+                      pickupDate={pickupDate}
+                      returnDate={returnDate}
+                      onDateSelect={(pDate, rDate) => {
+                        setPickupDate(pDate);
+                        setReturnDate(rDate);
+                        if (errors.dates) setErrors(prev => ({ ...prev, dates: '' }));
+                      }}
+                    />
                   </div>
 
                   {errors.dates && (

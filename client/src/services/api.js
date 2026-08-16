@@ -41,6 +41,7 @@ export const getCars = (params) => API.get('/cars', { params });
 export const getCarDetails = (id) => API.get(`/cars/${id}`);
 export const getCarLocations = () => API.get('/cars/locations');
 export const getCarBrands = () => API.get('/cars/brands');
+export const getCarAvailability = (params) => API.get('/cars/availability', { params });
 
 // Booking Services
 export const createBooking = (bookingData) => API.post('/bookings', bookingData);

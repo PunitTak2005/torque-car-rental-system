@@ -5,6 +5,8 @@ import { validateDates } from '../validations/rules';
 import { useToast } from '../context/ToastContext';
 import { AlertCircle, Gauge, Fuel, Users, MapPin, ArrowRight, Sparkles } from 'lucide-react';
 import Button from '../components/common/Button';
+import PickupHubSelect from '../components/common/PickupHubSelect';
+import CalendarCard from '../components/common/CalendarCard';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -277,31 +279,23 @@ const Home = () => {
             <h2 className="text-3xl font-display uppercase tracking-wider text-chalk">PLAN YOUR DRIVE</h2>
           </header>
 
-          <form onSubmit={handleSearchSubmit} className="space-y-10" noValidate>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="space-y-4">
-                <span className="text-[11px] font-bold text-silver tracking-widest uppercase block">Where are you going?</span>
-                <input
-                  type="text"
-                  required
-                  placeholder="PICKUP HUB"
-                  value={pickupLocation}
-                  onChange={(e) => setPickupLocation(e.target.value)}
-                  className="w-full bg-transparent border-b border-white/10 py-3 text-sm text-chalk placeholder-stone focus:outline-none focus:border-neon-accent transition-colors tracking-widest uppercase font-bold"
-                />
-              </div>
+          <form onSubmit={handleSearchSubmit} className="space-y-8" noValidate>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <PickupHubSelect
+                value={pickupLocation}
+                onChange={(val) => setPickupLocation(val)}
+                label="WHERE ARE YOU GOING? (PICKUP HUB)"
+                placeholder="Select Pickup Hub"
+                required
+              />
 
-              <div className="space-y-4">
-                <span className="text-[11px] font-bold text-silver tracking-widest uppercase block">Where will you return?</span>
-                <input
-                  type="text"
-                  required
-                  placeholder="DROPOFF HUB"
-                  value={dropoffLocation}
-                  onChange={(e) => setDropoffLocation(e.target.value)}
-                  className="w-full bg-transparent border-b border-white/10 py-3 text-sm text-chalk placeholder-stone focus:outline-none focus:border-neon-accent transition-colors tracking-widest uppercase font-bold"
-                />
-              </div>
+              <PickupHubSelect
+                value={dropoffLocation}
+                onChange={(val) => setDropoffLocation(val)}
+                label="WHERE WILL YOU RETURN? (DROPOFF HUB)"
+                placeholder="Select Return Hub"
+                required
+              />
 
               <div className="space-y-4">
                 <span className="text-[11px] font-bold text-silver tracking-widest uppercase block">When does the journey begin?</span>
@@ -310,7 +304,7 @@ const Home = () => {
                   required
                   value={pickupDate}
                   onChange={(e) => setPickupDate(e.target.value)}
-                  className="w-full bg-transparent border-b border-white/10 py-3 text-sm text-chalk focus:outline-none focus:border-neon-accent transition-colors uppercase font-bold"
+                  className="w-full bg-asphalt border border-white/15 px-4 py-3 rounded-xl text-sm text-chalk focus:outline-none focus:border-neon-accent transition-colors uppercase font-bold"
                 />
               </div>
 
@@ -321,9 +315,22 @@ const Home = () => {
                   required
                   value={returnDate}
                   onChange={(e) => setReturnDate(e.target.value)}
-                  className="w-full bg-transparent border-b border-white/10 py-3 text-sm text-chalk focus:outline-none focus:border-neon-accent transition-colors uppercase font-bold"
+                  className="w-full bg-asphalt border border-white/15 px-4 py-3 rounded-xl text-sm text-chalk focus:outline-none focus:border-neon-accent transition-colors uppercase font-bold"
                 />
               </div>
+            </div>
+
+            {/* City Vehicle Real-time Availability Calendar */}
+            <div className="pt-2">
+              <CalendarCard
+                selectedCity={pickupLocation}
+                pickupDate={pickupDate}
+                returnDate={returnDate}
+                onDateSelect={(pDate, rDate) => {
+                  setPickupDate(pDate);
+                  setReturnDate(rDate);
+                }}
+              />
             </div>
 
             <div className="flex justify-end pt-4">

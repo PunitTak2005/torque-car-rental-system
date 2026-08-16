@@ -4,10 +4,12 @@ const {
   getCars,
   getCarLocations,
   getCarBrands,
-  getCarDetails
+  getCarDetails,
+  getCarAvailability
 } = require('../controllers/carController');
 
 router.get('/', getCars);
+router.get('/availability', getCarAvailability);
 router.get('/locations', getCarLocations);
 router.get('/brands', getCarBrands);
 router.get('/:id', getCarDetails);

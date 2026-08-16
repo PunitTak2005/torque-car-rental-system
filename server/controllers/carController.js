@@ -223,9 +223,108 @@ const getCarDetails = async (req, res, next) => {
   }
 };
 
+// @desc    Get dynamic real-time availability for a city or specific vehicle by month/year
+// @route   GET /api/cars/availability
+// @access  Public
+const getCarAvailability = async (req, res, next) => {
+  try {
+    const { city, carId, year, month } = req.query;
+
+    const currentYear = year ? parseInt(year, 10) : new Date().getFullYear();
+    const currentMonth = month ? parseInt(month, 10) : new Date().getMonth() + 1; // 1-12
+
+    // Build query for vehicles
+    const query = { availability: true };
+    if (carId && mongoose.Types.ObjectId.isValid(carId)) {
+      query._id = carId;
+    } else if (city) {
+      query.location = { $regex: new RegExp(city.trim(), 'i') };
+    }
+
+    const cars = await Car.find(query).select('_id location brand model availability');
+    const totalCarsCount = cars.length;
+
+    if (totalCarsCount === 0) {
+      return res.json({
+        success: true,
+        city: city || 'All',
+        carId: carId || null,
+        totalCars: 0,
+        availabilityMap: {},
+        message: 'No vehicles available in this pickup hub'
+      });
+    }
+
+    const carIds = cars.map(c => c._id);
+
+    // Calculate start and end date of target month
+    const startOfMonth = new Date(Date.UTC(currentYear, currentMonth - 1, 1, 0, 0, 0));
+    const endOfMonth = new Date(Date.UTC(currentYear, currentMonth, 0, 23, 59, 59));
+
+    // Find all active/pending/confirmed/completed bookings for target month
+    const Booking = require('../models/Booking');
+    const activeBookings = await Booking.find({
+      car: { $in: carIds },
+      status: { $in: ['Pending', 'Confirmed', 'Active', 'Completed'] },
+      pickupDate: { $lte: endOfMonth },
+      returnDate: { $gte: startOfMonth }
+    }).select('car pickupDate returnDate status');
+
+    // Build day-by-day availability dictionary
+    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+    const availabilityMap = {};
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const dayDate = new Date(Date.UTC(currentYear, currentMonth - 1, day, 12, 0, 0));
+
+      const bookedCarIds = new Set();
+      activeBookings.forEach(b => {
+        const pDate = new Date(b.pickupDate);
+        const rDate = new Date(b.returnDate);
+        pDate.setUTCHours(0, 0, 0, 0);
+        rDate.setUTCHours(23, 59, 59, 999);
+
+        if (dayDate >= pDate && dayDate <= rDate) {
+          bookedCarIds.add(b.car.toString());
+        }
+      });
+
+      const bookedCount = bookedCarIds.size;
+      let isAvailable = false;
+
+      if (carId) {
+        isAvailable = !bookedCarIds.has(carId.toString());
+      } else {
+        isAvailable = bookedCount < totalCarsCount;
+      }
+
+      availabilityMap[dateStr] = {
+        available: isAvailable,
+        bookedCount,
+        totalCars: totalCarsCount,
+        availableCarsCount: totalCarsCount - bookedCount
+      };
+    }
+
+    res.json({
+      success: true,
+      city: city || 'All',
+      carId: carId || null,
+      year: currentYear,
+      month: currentMonth,
+      totalCars: totalCarsCount,
+      availabilityMap
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getCars,
   getCarLocations,
   getCarBrands,
-  getCarDetails
+  getCarDetails,
+  getCarAvailability
 };
