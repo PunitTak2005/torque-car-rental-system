@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
@@ -19,31 +18,44 @@ const allowedOrigins = [
   'https://torque-car-rental-system.vercel.app',
   process.env.CLIENT_URL,
   process.env.FRONTEND_URL
-].filter(Boolean);
+].filter(Boolean).map(url => url.trim().replace(/\/+$/, ''));
 
-// CORS Middleware Configuration
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, Postman, or server-to-server)
-    if (!origin) return callback(null, true);
+// Helper to check if an origin is permitted
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true; // Server-to-server, Mobile, Postman
+  const normalized = origin.trim().replace(/\/+$/, '');
+  if (allowedOrigins.includes(normalized)) return true;
+  if (/^https:\/\/torque-car-rental-system.*\.vercel\.app$/.test(normalized)) return true;
+  if (/^https:\/\/torque-car-rental.*\.vercel\.app$/.test(normalized)) return true;
+  if (normalized.startsWith('http://localhost:') || normalized.startsWith('http://127.0.0.1:')) return true;
+  return false;
+};
 
-    // Check if origin is explicitly allowed or matches Vercel deployment domain pattern
-    const isAllowed =
-      allowedOrigins.includes(origin) ||
-      /^https:\/\/torque-car-rental-system.*\.vercel\.app$/.test(origin) ||
-      /^https:\/\/torque-car-rental.*\.vercel\.app$/.test(origin);
+// Comprehensive CORS Middleware (Handles Preflight & Normal Requests Explicitly)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
 
-    if (isAllowed) {
-      callback(null, true);
+  if (isAllowedOrigin(origin)) {
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
     } else {
-      console.warn(`[CORS Blocked Origin]: ${origin}`);
-      callback(new Error(`CORS policy error: Origin ${origin} is not allowed`));
+      res.setHeader('Access-Control-Allow-Origin', '*');
     }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  } else {
+    console.warn(`[CORS Blocked Origin]: ${origin}`);
+  }
+
+  // Intercept and answer OPTIONS preflight requests immediately with 204 No Content
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+
+  next();
+});
 
 app.use(express.json());
 
