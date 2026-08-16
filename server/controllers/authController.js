@@ -170,33 +170,39 @@ const updateProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
 
-    if (user) {
-      user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
-      user.phone = req.body.phone || user.phone;
-      if (req.body.profilePhoto !== undefined) {
-        user.profilePhoto = req.body.profilePhoto;
-      }
-
-      if (req.body.password) {
-        user.password = req.body.password;
-      }
-
-      const updatedUser = await user.save();
-
-      res.json({
-        success: true,
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        phone: updatedUser.phone,
-        role: updatedUser.role,
-        profilePhoto: updatedUser.profilePhoto,
-        token: generateToken(updatedUser._id)
-      });
-    } else {
-      res.status(404).json({ success: false, message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
+
+    if (req.body.name) user.name = req.body.name;
+    if (req.body.email) user.email = req.body.email;
+    if (req.body.phone) user.phone = req.body.phone;
+
+    if (req.body.profilePhoto !== undefined) {
+      user.profilePhoto = req.body.profilePhoto;
+    }
+
+    if (req.body.password && req.body.password.trim().length >= 6) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    const userObj = {
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      phone: updatedUser.phone,
+      role: updatedUser.role,
+      profilePhoto: updatedUser.profilePhoto
+    };
+
+    res.json({
+      success: true,
+      user: userObj,
+      ...userObj,
+      token: generateToken(updatedUser._id)
+    });
   } catch (error) {
     next(error);
   }
