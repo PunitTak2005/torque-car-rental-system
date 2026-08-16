@@ -10,8 +10,22 @@
 
 ---
 
+## 🌐 Live Application Links
+
+### **Local Environment (Active Server)**
+- 🌐 **Client Web Application**: [http://localhost:3253](http://localhost:3253)
+- 👨‍💼 **Admin Control Center**: [http://localhost:3253/admin](http://localhost:3253/admin)
+- ⚙️ **Backend REST API**: [http://localhost:9002/api](http://localhost:9002/api)
+
+### ☁️ **Cloud Deployment (Recommended Stack)**
+- **Frontend Hosting**: [Vercel](https://vercel.com/) / [Netlify](https://netlify.com/)
+- **Backend Hosting**: [Render](https://render.com/) / [Railway](https://railway.app/)
+- **Database Cloud Cluster**: [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+
+---
+
 ## 🔗 Official GitHub Repository
-**Repository URL**: `https://github.com/PunitTak2005/torque-car-rental-system`
+**Repository URL**: [`https://github.com/PunitTak2005/torque-car-rental-system`](https://github.com/PunitTak2005/torque-car-rental-system)
 
 ---
 
@@ -57,93 +71,26 @@
 
 ---
 
-## 📂 Project Structure
+## 🚀 Cloud Deployment Instructions (5 Minutes)
 
-```text
-torque-car-rental-system/
-├── client/                     # React Frontend Application
-│   ├── src/
-│   │   ├── components/         # UI Components (Navbar, Footer, Admin, Car details)
-│   │   ├── context/            # React Context Providers (Auth, Theme, Toast, Favorites)
-│   │   ├── pages/              # Page views (Home, BrowseCars, CarDetails, BookingWorkflow, Admin)
-│   │   ├── routes/             # App Router DOM definitions
-│   │   └── services/           # Axios API services
-│   ├── package.json
-│   └── vite.config.js
-│
-├── server/                     # Node.js Express REST API Backend
-│   ├── config/                 # Database configuration (db.js)
-│   ├── controllers/            # API Controllers (auth, car, booking, admin, review, favorite)
-│   ├── middleware/             # Auth JWT verification & error handlers
-│   ├── models/                 # Mongoose schemas (User, Car, Booking, Payment, Review, Favorite)
-│   ├── routes/                 # Express API endpoint routes
-│   ├── seed.js                 # Database seed script for fleet catalog
-│   ├── seedBookings.js         # Database seed script for realistic bookings
-│   ├── package.json
-│   └── server.js
-│
-├── screenshots/                # Project Screenshots (Light & Dark Mode)
-├── README.md                   # Project Documentation
-└── .env.example                # Environment Variable Template
-```
+### Step 1: Deploy Database on MongoDB Atlas
+1. Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+2. Obtain your connection string: `mongodb+srv://username:password@cluster.mongodb.net/car-rental`.
 
----
+### Step 2: Deploy Backend API on Render / Railway
+1. Connect your GitHub repository `PunitTak2005/torque-car-rental-system`.
+2. Root directory: `server`.
+3. Build command: `npm install`. Start command: `node server.js`.
+4. Add environment variables:
+   - `MONGODB_URI`: Your MongoDB Atlas URI
+   - `JWT_SECRET`: `your_jwt_secret_key`
+   - `NODE_ENV`: `production`
 
-## ⚡ Quick Setup & Installation
-
-### **Prerequisites**
-- Node.js (v18+ recommended)
-- MongoDB running locally (`mongodb://127.0.0.1:27017`) or MongoDB Atlas cluster
-
-### **1. Configure Environment Variables**
-Copy `.env.example` to `.env` inside the `server/` directory:
-
-```bash
-cp .env.example server/.env
-```
-
-Set your configuration values:
-```env
-PORT=9002
-MONGODB_URI=mongodb://127.0.0.1:27017/car-rental
-JWT_SECRET=your_jwt_secret_key_here
-NODE_ENV=development
-```
-
-### **2. Start Backend API Server**
-```bash
-cd server
-npm install
-npm start
-# Express Server listening on http://localhost:9002
-```
-
-### **3. Start Frontend React Web App**
-```bash
-cd client
-npm install
-npm run dev
-# React Web Application running on http://localhost:3253
-```
-
----
-
-## 📸 Screenshots Directory
-
-All 22 high-resolution screenshots covering Customer and Admin workflows in both **Light Mode** and **Dark Mode** are available in the [`screenshots/`](./screenshots) folder:
-
-- `01_home_page_light.png` & `02_home_page_dark.png` — Home Page
-- `03_fleet_gallery_light.png` & `04_fleet_gallery_dark.png` — Fleet Gallery
-- `05_showroom_filters_light.png` & `06_filtered_fleet_dark.png` — Showroom Filters & SUV Fleet
-- `07_car_details_page_light.png` & `08_car_details_reviews_dark.png` — Car Details Page & Reviews
-- `09_booking_form_light.png` & `10_booking_confirmation_dark.png` — 4-Step Booking Workflow & Confirmation Voucher
-- `11_booking_history_light.png` & `12_booking_history_dark.png` — Journey Timeline / My Bookings
-- `13_login_light.png` & `14_signup_dark.png` — Authentication Views
-- `15_admin_dashboard_dark.png` & `16_admin_dashboard_light.png` — Admin Dashboard Overview & Revenue Telemetry
-- `17_admin_fleet_management_dark.png` & `18_admin_fleet_management_light.png` — Admin Fleet Catalog (CRUD)
-- `19_admin_bookings_dark.png` & `20_admin_bookings_light.png` — Admin Reservations Feed & Lifecycle Manager
-- `21_admin_users_light.png` — Admin Customer Directory
-- `22_admin_reviews_dark.png` — Admin Review Moderation
+### Step 3: Deploy Frontend Client on Vercel
+1. Import repository `PunitTak2005/torque-car-rental-system` on [Vercel](https://vercel.com).
+2. Root directory: `client`.
+3. Build command: `npm run build`. Output directory: `dist`.
+4. Environment variables: `VITE_API_URL` = Your backend Render API URL.
 
 ---
 
@@ -155,5 +102,5 @@ All 22 high-resolution screenshots covering Customer and Admin workflows in both
 ---
 
 ## 👨‍💻 Developer Information
-Developed as part of the **TORQUE Luxury & Performance Car Rental System** platform.
+Developed for **TORQUE Luxury & Performance Car Rental System**.
 - **Repository**: [PunitTak2005/torque-car-rental-system](https://github.com/PunitTak2005/torque-car-rental-system)
