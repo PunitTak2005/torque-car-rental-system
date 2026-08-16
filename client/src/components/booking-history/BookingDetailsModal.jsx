@@ -1,6 +1,24 @@
 import React, { useState } from 'react';
-import { X, Calendar, MapPin, User, Mail, Phone, FileText, CreditCard, ShieldCheck, AlertTriangle, Printer, Clock, Smartphone, Banknote } from 'lucide-react';
+import {
+  X,
+  Calendar,
+  MapPin,
+  User,
+  Mail,
+  Phone,
+  FileText,
+  CreditCard,
+  ShieldCheck,
+  AlertTriangle,
+  Printer,
+  Download,
+  Clock,
+  Smartphone,
+  Banknote,
+  Car as CarIcon
+} from 'lucide-react';
 import Button from '../common/Button';
+import { generateInvoicePDF } from '../../utils/generateInvoicePDF';
 
 const BookingDetailsModal = ({ booking, onClose, onCancelBooking, onPayBooking }) => {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -64,10 +82,14 @@ const BookingDetailsModal = ({ booking, onClose, onCancelBooking, onPayBooking }
     window.print();
   };
 
+  const handleDownloadInvoice = () => {
+    generateInvoicePDF(booking);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-asphalt/85 backdrop-blur-lg animate-page-enter">
       <div 
-        className="bg-graphite border border-white/10 rounded-3xl max-w-5xl w-full overflow-hidden shadow-2xl text-chalk flex flex-col"
+        className="bg-graphite border border-white/10 rounded-3xl max-w-5xl w-full overflow-hidden shadow-2xl text-chalk flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Compact Modal Header */}
@@ -114,8 +136,8 @@ const BookingDetailsModal = ({ booking, onClose, onCancelBooking, onPayBooking }
           </div>
         </header>
 
-        {/* Content Body (No Scrollbar — Perfectly Fits on Screen) */}
-        <main className="p-6 space-y-4">
+        {/* Content Body */}
+        <main className="p-6 space-y-4 overflow-y-auto">
           
           {/* Vehicle Feature Banner */}
           {car && (
@@ -271,14 +293,24 @@ const BookingDetailsModal = ({ booking, onClose, onCancelBooking, onPayBooking }
         </main>
 
         {/* Compact Footer Actions */}
-        <footer className="px-6 py-3 border-t border-white/10 bg-asphalt/90 flex items-center justify-between gap-4 shrink-0">
-          <Button
-            onClick={handlePrint}
-            className="bg-white/5 hover:bg-white/10 border border-white/10 text-chalk text-xs font-bold px-3.5 py-2 flex items-center gap-2 cursor-pointer"
-          >
-            <Printer className="w-3.5 h-3.5 text-neon-accent" />
-            <span>Print Receipt</span>
-          </Button>
+        <footer className="px-6 py-3 border-t border-white/10 bg-asphalt/90 flex flex-wrap items-center justify-between gap-4 shrink-0">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleDownloadInvoice}
+              className="bg-neon-accent hover:bg-chalk text-asphalt font-extrabold text-xs px-4 py-2 flex items-center gap-2 cursor-pointer shadow-lg rounded-xl transition-all"
+            >
+              <Download className="w-3.5 h-3.5 text-asphalt" />
+              <span>DOWNLOAD INVOICE (PDF)</span>
+            </button>
+
+            <button
+              onClick={handlePrint}
+              className="bg-white/5 hover:bg-white/10 border border-white/10 text-chalk text-xs font-bold px-3.5 py-2 flex items-center gap-2 cursor-pointer rounded-xl transition-all"
+            >
+              <Printer className="w-3.5 h-3.5 text-neon-accent" />
+              <span>PRINT INVOICE</span>
+            </button>
+          </div>
 
           <div className="flex items-center gap-3">
             {canCancel && !showCancelConfirm && (

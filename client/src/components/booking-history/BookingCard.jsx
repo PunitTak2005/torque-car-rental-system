@@ -186,8 +186,16 @@ const BookingCard = ({ booking, onViewDetails, onCancelBooking }) => {
       )}
 
       {/* Card Action Footer */}
-      {canCancel && !showCancelPrompt && (
-        <div className="bg-asphalt/40 px-6 py-4 border-t border-white/10 flex items-center justify-end">
+      <div className="bg-asphalt/40 px-6 py-4 border-t border-white/10 flex items-center justify-between gap-4">
+        <button
+          onClick={() => onViewDetails && onViewDetails(booking)}
+          className="bg-neon-accent hover:bg-chalk text-asphalt font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg flex items-center gap-2 cursor-pointer transition-all active:scale-95 uppercase tracking-widest"
+        >
+          <Eye className="w-4 h-4 text-asphalt" />
+          <span>MORE DETAILS</span>
+        </button>
+
+        {canCancel && !showCancelPrompt && (
           <button
             onClick={() => setShowCancelPrompt(true)}
             className="bg-rose-500/10 hover:bg-rose-600 border border-rose-500/30 text-rose-400 hover:text-chalk text-[10px] font-extrabold uppercase tracking-widest px-4 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-all cursor-pointer active:scale-95"
@@ -195,8 +203,8 @@ const BookingCard = ({ booking, onViewDetails, onCancelBooking }) => {
             <XCircle className="w-4 h-4" />
             <span>Cancel Booking</span>
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
     </div>
   );

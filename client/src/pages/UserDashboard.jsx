@@ -9,6 +9,7 @@ import Button from '../components/common/Button';
 import Modal from '../components/common/Modal';
 import Rating from '../components/common/Rating';
 import EmptyState from '../components/common/EmptyState';
+import BookingDetailsModal from '../components/booking-history/BookingDetailsModal';
 import { Calendar, User, Bell, Printer, MapPin, Settings, MessageSquare } from 'lucide-react';
 
 const UserDashboard = () => {
@@ -513,85 +514,14 @@ const UserDashboard = () => {
         )}
       </Modal>
 
-      {/* Invoice/Receipt Viewer Modal */}
-      <Modal
-        isOpen={!!viewingInvoice}
-        onClose={() => setViewingInvoice(null)}
-        title="TORQUE Receipt"
-        maxWidth="max-w-2xl"
-      >
-        {viewingInvoice && (
-          <div className="space-y-6">
-            <div id="printable-invoice" className="space-y-6 text-chalk text-xs">
-              <div className="flex justify-between items-start pb-4 border-b border-white/5">
-                <div>
-                  <h2 className="text-sm font-bold uppercase tracking-widest text-chalk">Receipt Details</h2>
-                  <span className="text-silver/60 mt-1 block uppercase tracking-widest text-[9px]">Reference: {viewingInvoice.bookingId}</span>
-                </div>
-                <div className="text-right">
-                  <span className="px-2.5 py-0.5 bg-emerald-950 text-emerald-455 font-bold border border-emerald-800 uppercase tracking-widest text-[8px]">
-                    {viewingInvoice.paymentStatus}
-                  </span>
-                  <span className="text-silver/60 mt-1.5 block uppercase tracking-widest text-[9px]">
-                    Date: {new Date(viewingInvoice.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6 uppercase tracking-wider text-[10px]">
-                <div>
-                  <h4 className="font-bold text-silver mb-1">Driver:</h4>
-                  <p>{viewingInvoice.customerDetails.fullName}</p>
-                  <p>{viewingInvoice.customerDetails.email}</p>
-                  <p>License: {viewingInvoice.customerDetails.driverLicense}</p>
-                </div>
-                <div>
-                  <h4 className="font-bold text-silver mb-1">Hire:</h4>
-                  <p>{viewingInvoice.car?.brand} {viewingInvoice.car?.model}</p>
-                  <p>Location: {viewingInvoice.pickupLocation}</p>
-                  <p>Duration: {viewingInvoice.totalDays} days</p>
-                </div>
-              </div>
-
-              <div className="border-t border-white/5 pt-4 space-y-2 uppercase tracking-wider text-[10px]">
-                <div className="flex justify-between text-silver">
-                  <span>Subtotal ({viewingInvoice.totalDays} days &times; ₹{viewingInvoice.dailyRate}/day)</span>
-                  <span className="font-bold text-chalk">₹{viewingInvoice.billing.subtotal?.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-silver">
-                  <span>Security Deposit</span>
-                  <span className="font-bold text-chalk">₹{viewingInvoice.billing.securityDeposit?.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-silver">
-                  <span>Taxes (8%)</span>
-                  <span className="font-bold text-chalk">₹{viewingInvoice.billing.taxes?.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between border-t border-white/5 pt-3 text-xs font-bold text-chalk">
-                  <span>Grand Total</span>
-                  <span className="text-neon-accent">₹{viewingInvoice.billing.totalAmount?.toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
-
-            <footer className="flex justify-end gap-3 pt-4 border-t border-white/5">
-              <Button
-                onClick={() => window.print()}
-                variant="secondary"
-                className="px-4 py-2 text-xs"
-              >
-                <Printer className="w-3.5 h-3.5 mr-1" aria-hidden="true" />
-                <span>Print</span>
-              </Button>
-              <Button
-                onClick={() => setViewingInvoice(null)}
-                className="px-4 py-2 text-xs"
-              >
-                Close
-              </Button>
-            </footer>
-          </div>
-        )}
-      </Modal>
+      {/* Detailed Booking & Invoice Modal */}
+      {viewingInvoice && (
+        <BookingDetailsModal
+          booking={viewingInvoice}
+          onClose={() => setViewingInvoice(null)}
+          onCancelBooking={handleCancelBooking}
+        />
+      )}
 
     </div>
   );
