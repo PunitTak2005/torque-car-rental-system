@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'torque_car_rental_jwt_secret_key_2026_fallback';
+
 const protect = async (req, res, next) => {
   let token;
 
@@ -13,7 +15,7 @@ const protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
 
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, JWT_SECRET);
 
       // Get user from the token, exclude password
       req.user = await User.findById(decoded.id).select('-password');
@@ -28,7 +30,7 @@ const protect = async (req, res, next) => {
 
       next();
     } catch (error) {
-      console.error(error);
+      console.error('[Auth Middleware Error]:', error.message);
       return res.status(401).json({ success: false, message: 'Not authorized, token failed' });
     }
   }

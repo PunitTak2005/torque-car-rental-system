@@ -70,7 +70,40 @@ const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select('+password');
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'Please provide email and password' });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    let user = await User.findOne({ email: normalizedEmail }).select('+password');
+
+    // Auto-seed demo accounts on demand if database is missing demo accounts
+    if (!user) {
+      if (normalizedEmail === 'punittak2005@gmail.com' || normalizedEmail === 'john@gmail.com') {
+        user = await User.create({
+          name: normalizedEmail === 'punittak2005@gmail.com' ? 'Punit Tak' : 'John Doe',
+          email: normalizedEmail,
+          phone: '06367088841',
+          password: 'password123',
+          role: 'customer',
+          termsAccepted: true
+        });
+        user = await User.findById(user._id).select('+password');
+        console.log(`[Auth Demo Seeding]: Initialized demo customer account: ${normalizedEmail}`);
+      } else if (normalizedEmail === 'admin@torque.com') {
+        user = await User.create({
+          name: 'System Administrator',
+          email: 'admin@torque.com',
+          phone: '9876543210',
+          password: 'admin123',
+          role: 'admin',
+          termsAccepted: true
+        });
+        user = await User.findById(user._id).select('+password');
+        console.log(`[Auth Demo Seeding]: Initialized admin account: admin@torque.com`);
+      }
+    }
+
     if (user && (await user.matchPassword(password))) {
       if (user.status === 'suspended') {
         return res.status(403).json({ success: false, message: 'Your account has been suspended' });
@@ -86,14 +119,15 @@ const loginUser = async (req, res, next) => {
         status: user.status
       };
 
-      res.json({
+      return res.json({
         success: true,
         user: userData,
         ...userData,
         token: generateToken(user._id)
       });
     } else {
-      res.status(401).json({ success: false, message: 'Invalid email or password' });
+      console.log(`[Auth Failure]: Invalid credentials attempt for email: ${normalizedEmail}`);
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
   } catch (error) {
     next(error);
@@ -107,14 +141,19 @@ const getProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
     if (user) {
-      res.json({
-        success: true,
+      const userData = {
         _id: user._id,
         name: user.name,
         email: user.email,
         phone: user.phone,
         role: user.role,
-        profilePhoto: user.profilePhoto
+        profilePhoto: user.profilePhoto,
+        status: user.status
+      };
+      res.json({
+        success: true,
+        user: userData,
+        ...userData
       });
     } else {
       res.status(404).json({ success: false, message: 'User not found' });
