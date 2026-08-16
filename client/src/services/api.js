@@ -1,8 +1,13 @@
 import axios from 'axios';
 import storage from '../utils/storage';
 
+// Compute API base URL and ensure '/api' endpoint prefix is present
+let rawApiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:9002/api').trim();
+rawApiUrl = rawApiUrl.replace(/\/+$/, '');
+const finalBaseURL = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:9002/api',
+  baseURL: finalBaseURL,
 });
 
 // Interceptor to inject JWT token
