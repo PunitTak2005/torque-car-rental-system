@@ -1,109 +1,74 @@
-# DriveEase | Modern Car Rental & Fleet Management System
+# 🏎️ TORQUE — Luxury & Performance Car Rental System
 
-DriveEase is a complete, premium, responsive Car Rental Management System built with a modern full-stack architecture (React/Vite, Express, Node.js, and MongoDB). 
+[![GitHub License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![React](https://img.shields.io/badge/React-18.x-blue?logo=react)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-Express-green?logo=node.js)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Database-brightgreen?logo=mongodb)](https://www.mongodb.com/)
 
-This platform showcases vehicle listing and discovery, advanced filters, user authentication, customer dashboards, and a robust admin panel.
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- **Node.js** (v18 or higher recommended)
-- **MongoDB** (A local MongoDB database instance running on `127.0.0.1:27017` was detected and configured)
+> **TORQUE** is a full-stack web application designed for luxury, sports, and electric vehicle rentals. It delivers a modern experience for customers reserving cars and an executive control panel for administrators managing fleet vehicles, bookings, users, and financial analytics.
 
 ---
 
-## 🛠️ Installation & Setup
+## 🔗 GitHub Repository Link
 
-Follow these steps to run the application locally:
-
-### 1. Database Seeding & Backend Server
-Open a terminal in the `/server` directory:
+To push or link this repository to your GitHub account:
 
 ```bash
-# Navigate to server
+# 1. Add your remote repository URL
+git remote add origin https://github.com/YOUR_GITHUB_USERNAME/torque-car-rental-app.git
+
+# 2. Rename branch to main
+git branch -M main
+
+# 3. Push all commits to GitHub
+git push -u origin main
+```
+
+---
+
+## 🌟 Key Features
+
+### 👤 Customer Portal
+- **Showroom & Fleet Gallery**: Browse vehicles with dynamic filtering by category (SUV, Sedan, Electric, Luxury, Sports), transmission, fuel type, and price range.
+- **Vehicle Configuration**: Detailed performance specifications (acceleration, top speed, horsepower) and interactive reviews.
+- **Persistent Favorites**: Account-isolated favorite cars stored in MongoDB.
+- **4-Step Booking Workflow**: Schedule selection, driver details & license verification, payment gateway (UPI / Card / Cash), and booking voucher.
+- **Journey Timeline**: Customer portal to track active rentals and past trip history.
+
+### 👨‍💼 Admin Control Center (`/admin`)
+- **Executive Analytics**: Real-time revenue card (`₹`), monthly growth comparison, and 3-column status analytics chart.
+- **Fleet Catalog CRUD**: Manage vehicle listings, pricing per day, image links, and availability status.
+- **Bookings Feed**: Complete reservation table with search, status filters, payment filters, page size options (`10`, `20`, `50`, `All`), and status change controls.
+- **User & Review Moderation**: Full customer directory and review moderation.
+- **Real-time Sidebar Badges**: MongoDB counts for Fleet (`36`), Bookings (`22`), Users (`16`), Payments (`20`), and Reviews (`1797`).
+
+---
+
+## 📸 Screenshots Directory
+All 22 project screenshots in **Light Mode & Dark Mode** are available in the [`screenshots/`](./screenshots) folder.
+
+---
+
+## 🚀 Quick Setup & Execution
+
+### 1. Start Backend API Server
+```bash
 cd server
-
-# Install dependencies
 npm install
-
-# Pre-populate database with 15+ realistic cars, mock bookings, and users
-npm run seed
-
-# Run the Express server in development mode
-npm run dev
+npm start
+# Server listening on http://localhost:9002
 ```
-The server will start running at `http://localhost:9002`.
 
-### 2. Frontend client
-Open a separate terminal in the `/client` directory:
-
+### 2. Start Frontend React Application
 ```bash
-# Navigate to client
 cd client
-
-# Install dependencies
 npm install
-
-# Run the Vite development server
 npm run dev
-```
-The client will start running at `http://localhost:3253`. Open your browser and navigate to `http://localhost:3253`.
-
----
-
-## 🔑 Test Credentials
-
-Use these seeded accounts to test different roles on the platform:
-
-### 👤 Customer User Role
-- **Email:** `john@gmail.com`
-- **Password:** `john123`
-*Allows booking cars, processing mock card payments, managing dashboard bookings, printing invoices, and submitting reviews.*
-
-### 🛡️ Administrative Role
-- **Email:** `admin@driveease.com`
-- **Password:** `admin123`
-*Allows managing the car fleet (CRUD), auditing reservations (Confirm, Start rental, Complete, Cancel), promoting users, and deleting spam reviews.*
-
----
-
-## 📁 Project Structure
-
-```text
-car-rental-app/
-├── client/
-│   ├── src/
-│   │   ├── components/       # Custom cards, protected routing, skeletons
-│   │   ├── context/          # AuthContext (sessions) & ToastContext (alerts)
-│   │   ├── pages/            # Homepage, Browse, Checkout, Dashboard, Admin
-│   │   ├── services/         # api.js Centralized Axios HTTP hooks
-│   │   ├── App.jsx           # React Router pathways
-│   │   ├── index.css         # Tailwind core + custom styling assets
-│   │   └── main.jsx          # Vite React engine mount
-│   ├── tailwind.config.js    # Tailwind colors & typography extended configuration
-│   └── package.json
-│
-├── server/
-│   ├── config/               # db.js Mongoose configuration
-│   ├── middleware/           # auth.js filters & errorHandler.js centralized router
-│   ├── models/               # MongoDB models (User, Car, Booking, Payment, Review...)
-│   ├── routes/               # Express endpoints (auth, cars, bookings, admin...)
-│   ├── seed.js               # Seed script populated with 15+ rich car cards
-│   ├── server.js             # Main server entrypoint
-│   └── package.json
-│
-├── .env.example              # Template containing default environment parameters
-└── README.md                 # Complete system guide
+# App running on http://localhost:3253
 ```
 
 ---
 
-## 💎 Features & Custom Business Rules
-
-1. **Date Collision Guard**: Enforces that a vehicle cannot be reserved for overlapping dates. Any overlapping booking attempts will be blocked by a MongoDB database validator, displaying clear error alerts.
-2. **Dynamic Review Aggregations**: Posting or deleting reviews dynamically updates the car's average rating (`rating`) and number of reviews (`numReviews`) fields inside the database.
-3. **Printable Invoices**: Completed checkouts and dashboard booking logs feature a printer-formatted HTML layout for physical invoice output.
-4. **Toast Notification System**: Pop-up banners notify users of validation errors, payment failures, or reservation confirmations.
-5. **SEO Implementations**: Automatic meta details and semantic headings structure.
+## 🔐 Default Credentials
+- **Admin Portal**: `http://localhost:3253/admin`
+- **Admin Email**: `admin@torque.com` | **Password**: `admin123`
